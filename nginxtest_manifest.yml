@@ -1,0 +1,17 @@
+---
+applications:
+- name: nginxtest3
+  env:
+    APP_ROOT: "/home/vcap/app"
+    FORCE_HTTPS: 'false'
+  buildpacks:
+  - ruby_buildpack
+  - nginx_buildpack
+  stack: cflinuxfs3
+  processes:
+  - type: web
+    instances: 1
+    memory: 1024M
+    disk_quota: 1024M
+    log-rate-limit-per-second: 16K
+    health-check-type: port

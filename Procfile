@@ -1,0 +1,1 @@
+web: erb nginx.conf.erb | tee nginx.conf && varify -buildpack-yml-path ./buildpack.yml ./nginx.conf $HOME/modules $DEP_DIR/nginx/modules && nginx -p $PWD -c ./nginx.conf

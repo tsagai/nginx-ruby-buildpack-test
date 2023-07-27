@@ -6,6 +6,11 @@ The static buildpack starting from v1.6.0 no longer supports ERB templating, so 
 
 This solution here can be used if there is a need to still use ERB templating of the nginx.conf file whilst using the Nginx buildpack. 
 
+## Deploying the app
+```bash
+cf push -f nginx_manifest.yml
+```
+
 # Components 
 ## Nginx.conf.erb
 The Nginx.conf.erb functionally replaces Nginx.conf. We have all of our templating included in this file. The Ruby buildpack, when placed first in the order of buildpacks in the `Nginx_manifest.yml` file will run the ERB templating on this file. 

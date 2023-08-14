@@ -2,7 +2,7 @@
 Example of using Ruby Buildpack + Nginx Buildpack to template an Nginx.conf file via ERB
 
 ## Overview
-The static buildpack starting from v1.6.0 no longer supports ERB templating, so nginx.conf files are no longer able to be templated with ERB in any versions beyond v1.6.0. The Nginx buildpack from the start did not include support for ERB or any other kind of templating from the very beginning. 
+The static buildpack starting from [v1.6.1](https://github.com/cloudfoundry/staticfile-buildpack/releases/tag/v1.6.1) no longer supports ERB templating, so nginx.conf files are no longer able to be templated with ERB in any versions beyond [v1.6.1](https://github.com/cloudfoundry/staticfile-buildpack/pull/360/files). The Nginx buildpack from the start did not include support for ERB or any other kind of templating from the very beginning. 
 
 This solution here can be used if there is a need to still use ERB templating of the nginx.conf file whilst using the Nginx buildpack. 
 

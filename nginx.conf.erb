@@ -1,85 +1,26 @@
 worker_processes 1;
 daemon off;
-
-error_log stderr;
+ 
+error_log <%= ENV["APP_ROOT"] %>/nginx/logs/error.log;
 events { worker_connections 1024; }
-
+ 
 http {
-  charset utf-8;
   log_format cloudfoundry '$http_x_forwarded_for - $http_referer - [$time_local] "$request" $status $body_bytes_sent';
-  access_log /dev/stdout cloudfoundry;
+  access_log <%= ENV["APP_ROOT"] %>/nginx/logs/access.log cloudfoundry;
   default_type application/octet-stream;
   # include mime.types;
   sendfile on;
-
   gzip on;
-  gzip_disable "msie6";
-  gzip_comp_level 6;
-  gzip_min_length 1100;
-  gzip_buffers 16 8k;
-  gzip_proxied any;
-  gunzip on;
-  gzip_static always;
-  gzip_types text/plain text/css text/js text/xml text/javascript application/javascript application/x-javascript application/json application/xml application/xml+rss;
-
   tcp_nopush on;
-  keepalive_timeout 60;
-  port_in_redirect off; # Ensure that redirects don't include the internal container PORT - <%= ENV["PORT"] %>
-  server_tokens off;
-  proxy_buffer_size 128k;
-  proxy_buffers 4 256k;
-  proxy_busy_buffers_size 256k;
-  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-  proxy_pass_request_headers on;
-
+  keepalive_timeout 30;
+ 
   server {
-    listen <%= ENV['PORT'] %>;
-    server_name localhost;
-
-    # location /api/ {
-    #   proxy_pass <%= ENV["API"] %>;
-    # }
-
-    location /health {
-      return 200 "{\"status\":\"UP\"}" ;
-      add_header Content-Type application/json ;
-    }
-
+    listen <%= ENV["PORT"] %>;  
+ 
     location / {
-
-      root <%= ENV['APP_ROOT'] %>/public;
-      <% if File.exists?(File.join(ENV['APP_ROOT'], "nginx/conf/.enable_pushstate")) %>
-      if (!-e $request_filename) {
-        rewrite ^(.*)$ / break;
-      }
-      <% end %>
+      root <%= ENV["APP_ROOT"] %>/public;
+      try_files $uri $uri/ /index.html =404;
       index index.html index.htm Default.htm;
-      try_files $uri $uri/ /index.html;
-      <% if File.exists?(File.join(ENV['APP_ROOT'], "nginx/conf/.enable_directory_index")) %>
-        autoindex on;
-      <% end %>
-      <% if File.exists?(auth_file = File.join(ENV['APP_ROOT'], "nginx/conf/.htpasswd")) %>
-        auth_basic "Restricted";                                #For Basic Auth
-        auth_basic_user_file <%= auth_file %>;  #For Basic Auth
-      <% end %>
-      <% if ENV['FORCE_HTTPS'] %>
-        if ($http_x_forwarded_proto != "https") {
-          return 301 https://$host$request_uri;
-        }
-      <% end %>
-      <% if File.exists?(File.join(ENV['APP_ROOT'], "nginx/conf/.enable_ssi")) %>
-        ssi on;
-      <% end %>
-      <% if File.exists?(File.join(ENV['APP_ROOT'], "nginx/conf/.enable_hsts")) %>
-        add_header Strict-Transport-Security "max-age=31536000";
-      <% end %>
     }
-
-   <% unless File.exists?(File.join(ENV['APP_ROOT'], "nginx/conf/.enable_dotfiles")) %>
-    location ~ /\. {
-      deny all;
-      return 404;
-    }
-  <% end %>
   }
-}
+}%                    
